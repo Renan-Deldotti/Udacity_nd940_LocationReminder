@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.net.ConnectivityManager
+import android.os.Build
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -66,3 +67,5 @@ fun View.fadeOut() {
         }
     })
 }
+
+fun Fragment.isQorHigher(): Boolean { return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q }

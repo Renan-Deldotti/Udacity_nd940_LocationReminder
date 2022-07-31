@@ -1,0 +1,34 @@
+[
+  {
+    "featureType": "poi",
+    "stylers": [
+      {
+        "color": "#23fb8f"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "stylers": [
+      {
+        "color": "#3063db"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "stylers": [
+      {
+        "color": "#a8a6a5"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "stylers": [
+      {
+        "color": "#b5422b"
+      }
+    ]
+  }
+]

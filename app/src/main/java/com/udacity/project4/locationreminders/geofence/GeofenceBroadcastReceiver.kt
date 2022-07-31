@@ -15,9 +15,14 @@ import android.content.Intent
  */
 
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
+
     override fun onReceive(context: Context, intent: Intent) {
+        if (ACTION_SAVED_GEOFENCE_BR == intent.action) {
+            GeofenceTransitionsJobIntentService.enqueueWork(context, intent)
+        }
+    }
 
-//TODO: implement the onReceive method to receive the geofencing events at the background
-
+    companion object {
+        const val ACTION_SAVED_GEOFENCE_BR = "ACTION_SAVED_GEOFENCE_BR"
     }
 }
