@@ -1,9 +1,20 @@
 package com.udacity.project4
 
 import android.app.Application
+import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.closeSoftKeyboard
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
@@ -11,6 +22,7 @@ import com.udacity.project4.locationreminders.reminderslist.RemindersListViewMod
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
@@ -65,7 +77,23 @@ class RemindersActivityTest :
         }
     }
 
+    @Test
+    fun check_save_display_check_reminders() = runBlocking {
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        onView(withId(R.id.noDataTextView)).check(matches(isDisplayed()))
 
-//    TODO: add End to End testing to the app
+        onView(withId(R.id.addReminderFAB)).perform(click())
 
+        onView(withId(R.id.reminderTitle)).perform(typeText("testing 123"))
+        onView(withId(R.id.reminderDescription)).perform(typeText("test description"))
+        closeSoftKeyboard()
+        onView(withId(R.id.selectLocation)).perform(click())
+        onView(withId(R.id.mapFragment)).perform(longClick())
+        onView(withId(R.id.saveLocationButton)).perform(click())
+        onView(withId(R.id.saveReminder)).perform(click())
+
+        onView(withText("testing 123")).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
 }
