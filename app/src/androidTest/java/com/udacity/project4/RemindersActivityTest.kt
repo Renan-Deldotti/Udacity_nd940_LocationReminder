@@ -3,6 +3,7 @@ package com.udacity.project4
 import android.Manifest
 import android.app.Activity
 import android.app.Application
+import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso
@@ -16,9 +17,12 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.GrantPermissionRule
+import com.google.android.material.internal.ContextUtils.getActivity
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
@@ -55,6 +59,9 @@ class RemindersActivityTest :
 
     @get:Rule
     var backgroundLocationPermissionRule: GrantPermissionRule? = GrantPermissionRule.grant(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+
+    @get:Rule
+    val activityScenarioRule = ActivityScenarioRule(RemindersActivity::class.java)
 
     private lateinit var repository: ReminderDataSource
     private lateinit var appContext: Application
@@ -109,14 +116,6 @@ class RemindersActivityTest :
         IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
     }
 
-    private fun getActivity(activityScenario: ActivityScenario<RemindersActivity>) : Activity {
-        lateinit var activity: Activity
-        activityScenario.onActivity {
-            activity = it
-        }
-        return activity
-    }
-
     @Test
     fun check_save_display_check_reminders() = runBlocking {
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
@@ -129,8 +128,10 @@ class RemindersActivityTest :
         onView(withId(R.id.reminderDescription)).perform(typeText("test description"))
         closeSoftKeyboard()
         onView(withId(R.id.selectLocation)).perform(click())
-        onView(withId(R.id.mapFragment)).perform(longClick())
+        onView(withId(R.id.mapFragment)).perform(click())
+        delay(1500)
         onView(withId(R.id.saveLocationButton)).perform(click())
+        delay(1500)
         onView(withId(R.id.saveReminder)).perform(click())
         // Add check for the snackbar
         onView(withId(com.google.android.material.R.id.snackbar_text)).check(matches(withText(R.string.err_enter_title)))
@@ -138,9 +139,10 @@ class RemindersActivityTest :
 
         onView(withId(R.id.reminderTitle)).perform(typeText("testing 123"))
         closeSoftKeyboard()
+        delay(1500)
         onView(withId(R.id.saveReminder)).perform(click())
         // Add check for the toast
-        onView(withText(R.string.reminder_saved)).inRoot(withDecorView(not(getActivity(activityScenario).window.decorView))).check(matches(isDisplayed()))
+        onView(withText(R.string.reminder_saved)).inRoot(withDecorView(not(`is`(getActivity(appContext)?.window?.decorView)))).check(matches(isDisplayed()))
 
         onView(withText("testing 123")).check(matches(isDisplayed()))
 

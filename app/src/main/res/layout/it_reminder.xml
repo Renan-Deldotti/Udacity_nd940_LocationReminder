@@ -46,11 +46,14 @@
                 tools:text="Description" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:layout_marginStart="@dimen/padding_small"
                 android:text="@{item.location}"
                 android:textColor="@color/colorAccent"
+                app:layout_constraintStart_toEndOf="@id/description"
+                app:layout_constraintHorizontal_bias="1.0"
                 android:textSize="@dimen/text_size_small"
                 app:layout_constraintBottom_toBottomOf="@+id/description"
                 app:layout_constraintEnd_toEndOf="parent"
