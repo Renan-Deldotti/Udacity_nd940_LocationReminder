@@ -100,5 +100,8 @@ class RemindersLocalRepositoryTest {
         val remindersFromRepositoryAfterDelete = remindersLocalRepository.getReminder(tenReminderList[2].id)
 
         assertThat(remindersFromRepositoryAfterDelete is Result.Error, `is`(true))
+
+        val message = (remindersFromRepositoryAfterDelete as Result.Error).message
+        assertThat(message, `is`("Reminder not found!"))
     }
 }
