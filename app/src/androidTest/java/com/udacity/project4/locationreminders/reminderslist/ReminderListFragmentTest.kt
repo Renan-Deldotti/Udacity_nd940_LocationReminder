@@ -47,7 +47,7 @@ class ReminderListFragmentTest {
         stopKoin()
         val module = module {
             viewModel { RemindersListViewModel(getApplicationContext(), get()) }
-            single { RemindersLocalRepository(get()) }
+            single { RemindersLocalRepository(get()) as ReminderDataSource }
             single { LocalDB.createRemindersDao(getApplicationContext()) }
         }
         startKoin {

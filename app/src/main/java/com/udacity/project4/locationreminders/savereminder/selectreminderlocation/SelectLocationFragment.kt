@@ -6,7 +6,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
+import android.location.Location
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -37,6 +40,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
     private lateinit var locationProvider: FusedLocationProviderClient
     private lateinit var pointOfInterest: PointOfInterest
+    private val mHandler = Handler(Looper.getMainLooper())
+    private var retriesSoFar = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -146,8 +151,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 Log.d(TAG, "checkLocationServiceStatus: succeed= $succeed   permissionsNowEnabled= $permissionsNowEnabled")
                 if (succeed && permissionsNowEnabled) {
                     try {
-                        locationProvider.lastLocation.addOnSuccessListener { location ->
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), DEFAULT_ZOOM_LEVEL))
+                        locationProvider.lastLocation.addOnSuccessListener { location: Location? ->
+                            if (location != null) {
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), DEFAULT_ZOOM_LEVEL))
+                                retriesSoFar = 0
+                            } else {
+                                if (retriesSoFar < MAX_RETRIES) {
+                                    retriesSoFar++
+                                    mHandler.postDelayed({manageLocationServiceStatus(true)},1250)
+                                }
+                            }
                         }
                     } catch (e: Exception) {
                         Log.d(TAG, "checkLocationServiceStatus: ${e.message}")
@@ -203,5 +216,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         private const val FINE_LOCATION_PERMISSION_REQUEST = 1011
         private const val CHANGE_LOCATION_REQUEST = 1012
         private const val DEFAULT_ZOOM_LEVEL = 18F
+        private const val MAX_RETRIES = 3
     }
 }

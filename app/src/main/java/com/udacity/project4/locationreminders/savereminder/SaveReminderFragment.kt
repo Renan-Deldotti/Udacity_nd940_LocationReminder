@@ -175,6 +175,9 @@ class SaveReminderFragment : BaseFragment() {
 
     @SuppressLint("MissingPermission")
     private fun addGeofence() {
+        if (!arePermissionsGranted()) {
+            requestLocationPermissions()
+        }
         if(this::reminderDataItem.isInitialized) {
             val geofence = Geofence.Builder()
                 .setRequestId(reminderDataItem.id)
@@ -199,11 +202,6 @@ class SaveReminderFragment : BaseFragment() {
                 }
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        requestLocationPermissions()
     }
 
     override fun onDestroy() {
